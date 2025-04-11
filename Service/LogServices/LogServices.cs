@@ -8,6 +8,8 @@ public interface ILogServices
 {
     Task<int> SaveLogAsync(SystemLog systemLog);
     Task<int> UpdateLogAsync(int logId, SystemLog systemLog);
+    Task<int> CountUserLogsAsync(int userId);
+    Task<bool> CheckLogExistsAsync(int logId);
     Task<int> DeleteLogAsync(int logId);
     Task<SystemLog?> GetLogByIdWithFindCmdAsync(int logId);
     Task<SystemLog?> GetLogByIdWithSingleCmdAsync(int logId);
@@ -22,6 +24,16 @@ public class LogServices : ILogServices
     public LogServices(MasterDbContext masterContext)
     {
         _masterContext = masterContext;
+    }
+
+    public async Task<bool> CheckLogExistsAsync(int logId)
+    {
+        return await _masterContext.SystemLog.AnyAsync(sl => sl.LogId == logId);
+    }
+
+    public async Task<int> CountUserLogsAsync(int userId)
+    {
+        return await _masterContext.SystemLog.CountAsync(sl => sl.AppUserId == userId);
     }
 
     public async Task<int> DeleteLogAsync(int logId)
