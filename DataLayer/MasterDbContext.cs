@@ -9,6 +9,7 @@ public class MasterDbContext : DbContext
         : base(options)
     {
     }
+
     public DbSet<AppUser> AppUser { get; set; }
     public DbSet<SystemLog> SystemLog { get; set; }
 
