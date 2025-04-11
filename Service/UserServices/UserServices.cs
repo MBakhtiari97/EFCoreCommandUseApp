@@ -12,6 +12,7 @@ public interface IUserServices
     Task<int> DeleteUserAsync(int userId);
     Task<IEnumerable<AppUser>?> GetAllUsersAsync();
     Task<AppUser?> GetUserWithLogsAsync(int userId);
+    Task<IEnumerable<AppUser>?> GetUsersWithLogsAsync();
 }
 
 public class UserServices : IUserServices
@@ -47,6 +48,11 @@ public class UserServices : IUserServices
     {
         return await _masterContext.AppUser
             .FirstOrDefaultAsync(x => x.AppUserId == userId);
+    }
+
+    public async Task<IEnumerable<AppUser>?> GetUsersWithLogsAsync()
+    {
+        return await _masterContext.AppUser.Include(au => au.SystemLogs).ToListAsync();
     }
 
     public async Task<AppUser?> GetUserWithLogsAsync(int userId)
