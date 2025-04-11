@@ -23,6 +23,7 @@ public interface ILogServices
     Task<int> ReadMaxLogIdAsync();
     Task<int> ReadMinLogIdAsync();
     Task<double> ReadAverageLogIdAsync();
+    Task<List<dynamic>> ReadGroupedLogsAsync();
 }
 
 public class LogServices : ILogServices
@@ -112,6 +113,15 @@ public class LogServices : ILogServices
     public async Task<double> ReadAverageLogIdAsync()
     {
         return await _masterContext.SystemLog.AverageAsync(sl => sl.LogId);
+    }
+
+    public async Task<List<dynamic>> ReadGroupedLogsAsync()
+    {
+        var groupedLogs = await _masterContext.SystemLog
+            .GroupBy(p => p.AppUserId)
+            .Select(g => new { UserId = g.Key, Count = g.Count() })
+            .ToListAsync<dynamic>();
+        return groupedLogs;
     }
 
     //Will get maximum log id from database
