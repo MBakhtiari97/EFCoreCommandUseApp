@@ -20,6 +20,8 @@ public interface ILogServices
     Task<bool> ExecuteDeleteSqlInterpolatedAsync(int logId);
     Task<List<SystemLog>> GetLogsAsync();
     Task<List<dynamic>> GetAnonymousLogDataList();
+    Task<int> ReadMaxLogIdAsync();
+    Task<int> ReadMinLogIdAsync();
 }
 
 public class LogServices : ILogServices
@@ -102,6 +104,16 @@ public class LogServices : ILogServices
     public async Task<List<SystemLog>> GetLogsAsync()
     {
         return await _masterContext.SystemLog.ToListAsync();
+    }
+
+    public async Task<int> ReadMaxLogIdAsync()
+    {
+        return await _masterContext.SystemLog.MaxAsync(sl => sl.LogId);
+    }
+
+    public async Task<int> ReadMinLogIdAsync()
+    {
+        return await _masterContext.SystemLog.MinAsync(sl => sl.LogId);
     }
 
     public async Task<int> SaveLogAsync(SystemLog systemLog)
