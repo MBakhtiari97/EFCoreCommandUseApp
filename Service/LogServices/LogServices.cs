@@ -34,11 +34,23 @@ public class LogServices : ILogServices
     {
         await _masterContext.AddAsync(systemLog);
         await _masterContext.SaveChangesAsync();
+
         return systemLog.LogId;
     }
 
-    public Task<int> UpdateLogAsync(int logId, SystemLog systemLog)
+    public async Task<int> UpdateLogAsync(int logId, SystemLog systemLog)
     {
-        throw new NotImplementedException();
+        var dbLog = await GetLogByIdAsync(logId);
+        if (dbLog == null)
+            throw new KeyNotFoundException("Log data not found");
+
+        dbLog.Description = systemLog.Description;
+        dbLog.LogSerial = systemLog.LogSerial;
+        dbLog.LogDateTime = systemLog.LogDateTime;
+
+        _masterContext.SystemLog.Update(dbLog);
+        await _masterContext.SaveChangesAsync();
+
+        return logId;
     }
 }
