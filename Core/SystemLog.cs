@@ -17,6 +17,8 @@ public class SystemLog
     public DateTime LogDateTime { get; set; } = DateTime.Now;
     [Required]
     public int AppUserId { get; set; }
+    [Required]
+    public bool Deleted { get; set; } = false;
 
     #region Navigation Properties
 
