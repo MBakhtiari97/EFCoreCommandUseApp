@@ -52,7 +52,7 @@ public class LogServices : ILogServices
     //Finds by condition, if multiple found, throws exception, if just one record found, returns that, otherwise it returns null
     public async Task<SystemLog?> GetLogByIdWithSingleCmdAsync(int logId)
     {
-        throw new NotImplementedException();
+        return await _masterContext.SystemLog.SingleOrDefaultAsync(sl => sl.LogId == logId);
     }
 
     public async Task<List<SystemLog>> GetLogsAsync()
