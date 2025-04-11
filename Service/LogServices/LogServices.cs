@@ -19,6 +19,7 @@ public interface ILogServices
     Task<bool> ExecuteDeleteSqlRawAsync(int logId);
     Task<bool> ExecuteDeleteSqlInterpolatedAsync(int logId);
     Task<List<SystemLog>> GetLogsAsync();
+    Task<List<dynamic>> GetAnonymousLogDataList();
 }
 
 public class LogServices : ILogServices
@@ -63,6 +64,14 @@ public class LogServices : ILogServices
     {
         var result = await _masterContext.Database.ExecuteSqlRawAsync($"UPDATE SystemLog SET Deleted = 1 WHERE LogId = {logId}");
         return result == 1 ? true : false;
+    }
+
+    public async Task<List<dynamic>> GetAnonymousLogDataList()
+    {
+        var anonymousList = await _masterContext.SystemLog
+        .Select(p => new { p.LogId, p.Description })
+        .ToListAsync<dynamic>();
+        return anonymousList;
     }
 
     public async Task<EntityEntry> GetEntryAsync(int logId)
