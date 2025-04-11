@@ -27,6 +27,9 @@ public class UserServices : IUserServices
         _masterContext = masterContext;
     }
 
+    /// <summary>
+    /// Delete command of efcore and it's usage sample
+    /// </summary>
     public async Task<int> DeleteUserAsync(int userId)
     {
         var user = await GetUserAsync(userId);
@@ -41,13 +44,18 @@ public class UserServices : IUserServices
         return user.AppUserId;
     }
 
+    /// <summary>
+    /// Fetching all data (can modify with WHERE)
+    /// </summary>
     public async Task<IEnumerable<AppUser>?> GetAllUsersAsync()
     {
         return await _masterContext.AppUser
         .ToListAsync();
     }
 
-    //Generating Cross-Users(Cartesian User)
+    /// <summary>
+    /// Using SelectMany to Generating Cross-Users(Cartesian User)(Fetching data)
+    /// </summary>
     public async Task<List<dynamic>> GetCrossUserLogsAsync()
     {
         var users = await _masterContext.AppUser.ToListAsync();
@@ -67,7 +75,9 @@ public class UserServices : IUserServices
         return result;
     }
 
-    //Using SelectMany to flatten the SystemLogs collection
+    /// <summary>
+    /// Using SelectMany to flatten the SystemLogs collection (Fetching data)
+    /// </summary>
     public async Task<List<dynamic>> GetFlattenCollectionUserAsync()
     {
         var systemLogs = await _masterContext.AppUser.SelectMany(c => c.SystemLogs).ToListAsync();
@@ -77,22 +87,34 @@ public class UserServices : IUserServices
         return result;
     }
 
+    /// <summary>
+    /// Fetching data with first or default (more descripted caption in log services)
+    /// </summary>
     public async Task<AppUser?> GetUserAsync(int userId)
     {
         return await _masterContext.AppUser
             .FirstOrDefaultAsync(x => x.AppUserId == userId);
     }
 
+    /// <summary>
+    /// Fetching data with include and list command , to fetching also relational data
+    /// </summary>
     public async Task<IEnumerable<AppUser>?> GetUsersWithLogsAsync()
     {
         return await _masterContext.AppUser.Include(au => au.SystemLogs).ToListAsync();
     }
 
+    /// <summary>
+    /// Fetching data with first or default (more descripted caption in log services)
+    /// </summary>
     public async Task<AppUser?> GetUserWithLogsAsync(int userId)
     {
         return await _masterContext.AppUser.Include(au => au.SystemLogs).FirstOrDefaultAsync(q => q.AppUserId == userId);
     }
 
+    /// <summary>
+    /// Inserting new record command
+    /// </summary>
     public async Task<int> SaveUserAsync(AppUser user)
     {
         await _masterContext.AddAsync(user);
@@ -100,6 +122,9 @@ public class UserServices : IUserServices
         return user.AppUserId;
     }
 
+    /// <summary>
+    /// Updating command of ef core
+    /// </summary>
     public async Task<int> UpdateUserAsync(int userId, AppUser user)
     {
         var dbUser = await GetUserAsync(userId);
