@@ -8,7 +8,7 @@ public interface ILogServices
 {
     Task<int> SaveLogAsync(SystemLog systemLog);
     Task<int> UpdateLogAsync(int logId, SystemLog systemLog);
-    Task<SystemLog> GetLogByIdAsync(int logId);
+    Task<SystemLog?> GetLogByIdAsync(int logId);
     Task<List<SystemLog>> GetLogsAsync();
 }
 
@@ -21,9 +21,9 @@ public class LogServices : ILogServices
         _masterContext = masterContext;
     }
 
-    public Task<SystemLog> GetLogByIdAsync(int logId)
+    public async Task<SystemLog?> GetLogByIdAsync(int logId)
     {
-        throw new NotImplementedException();
+        return await _masterContext.SystemLog.FindAsync(logId);
     }
 
     public async Task<List<SystemLog>> GetLogsAsync()
