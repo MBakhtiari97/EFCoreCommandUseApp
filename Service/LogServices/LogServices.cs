@@ -16,6 +16,7 @@ public interface ILogServices
     Task<SystemLog?> GetLogByIdWithFindCmdAsync(int logId);
     Task<SystemLog?> GetLogByIdWithSingleCmdAsync(int logId);
     Task<SystemLog?> GetLogByIdWithFirstCmdAsync(int logId);
+    Task<bool> ExecuteDeleteSqlRawAsync();
     Task<List<SystemLog>> GetLogsAsync();
 }
 
@@ -49,6 +50,12 @@ public class LogServices : ILogServices
         }
         else
             throw new KeyNotFoundException("Cannot found log data");
+    }
+
+    public async Task<bool> ExecuteDeleteSqlRawAsync()
+    {
+        var result = await _masterContext.Database.ExecuteSqlRawAsync("DELETE FROM AppUser WHERE AppUserId = 1");
+        return result == 1 ? true : false;
     }
 
     public async Task<EntityEntry> GetEntryAsync(int logId)
