@@ -1,6 +1,7 @@
 using DataLayer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration.UserSecrets;
+using Service.LogServices;
 using Service.UserServices;
 
 namespace Web;
@@ -33,6 +34,7 @@ public class Program
     private static void RegisterServices(WebApplicationBuilder builder)
     {
         builder.Services.AddScoped<IUserServices, UserServices>();
+        builder.Services.AddScoped<ILogServices, LogServices>();
     }
 
     public static void Main(string[] args)
