@@ -1,5 +1,6 @@
 ﻿using Core;
 using DataLayer;
+using Microsoft.EntityFrameworkCore;
 
 namespace Service.LogServices;
 
@@ -25,9 +26,9 @@ public class LogServices : ILogServices
         throw new NotImplementedException();
     }
 
-    public Task<List<SystemLog>> GetLogsAsync()
+    public async Task<List<SystemLog>> GetLogsAsync()
     {
-        throw new NotImplementedException();
+        return await _masterContext.SystemLog.ToListAsync();
     }
 
     public async Task<int> SaveLogAsync(SystemLog systemLog)
