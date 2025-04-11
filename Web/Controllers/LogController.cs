@@ -31,6 +31,7 @@ public class LogController : ControllerBase
             throw new Exception(ex.Message);
         }
     }
+
     [HttpGet]
     [Route("[action]")]
     public async Task<IActionResult> GetLogs()
@@ -45,6 +46,7 @@ public class LogController : ControllerBase
             throw new Exception(ex.Message);
         }
     }
+
     [HttpPost]
     [Route("[action]")]
     public async Task<IActionResult> SaveLog(SystemLog log)
@@ -59,6 +61,7 @@ public class LogController : ControllerBase
             throw new Exception(ex.Message);
         }
     }
+
     [HttpPut]
     [Route("[action]")]
     public async Task<IActionResult> UpdateLog(int logId, SystemLog log)
@@ -73,6 +76,7 @@ public class LogController : ControllerBase
             throw new Exception(ex.Message);
         }
     }
+
     [HttpDelete]
     [Route("[action]")]
     public async Task<IActionResult> DeleteLog(int logId)

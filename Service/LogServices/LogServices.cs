@@ -1,12 +1,14 @@
 ﻿using Core;
 using DataLayer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace Service.LogServices;
 
 public interface ILogServices
 {
     Task<int> SaveLogAsync(SystemLog systemLog);
+    Task<EntityEntry> GetEntryAsync(int logId);
     Task<int> UpdateLogAsync(int logId, SystemLog systemLog);
     Task<int> CountUserLogsAsync(int userId);
     Task<bool> CheckLogExistsAsync(int logId);
@@ -47,6 +49,13 @@ public class LogServices : ILogServices
         }
         else
             throw new KeyNotFoundException("Cannot found log data");
+    }
+
+    public async Task<EntityEntry> GetEntryAsync(int logId)
+    {
+        var dbLog = await GetLogByIdWithFindCmdAsync(logId);
+        var logEntry = _masterContext.SystemLog.Entry(dbLog);
+        return logEntry;
     }
 
     //Finds by a key
