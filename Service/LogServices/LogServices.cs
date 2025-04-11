@@ -25,6 +25,7 @@ public interface ILogServices
     Task<double> ReadAverageLogIdAsync();
     Task<List<dynamic>> ReadGroupedLogsAsync();
     Task<List<dynamic>> ReadJoinedLogsAsync();
+    Task<List<dynamic>> ReadLogDescriptionAsync();
 }
 
 public class LogServices : ILogServices
@@ -59,18 +60,21 @@ public class LogServices : ILogServices
             throw new KeyNotFoundException("Cannot found log data");
     }
 
+    //Will run direct sql command to delete a log with parametrizing for better security, will get related sql exception's if failed
     public async Task<bool> ExecuteDeleteSqlInterpolatedAsync(int logId)
     {
         var result = await _masterContext.Database.ExecuteSqlInterpolatedAsync($"UPDATE SystemLog SET Deleted = 1 WHERE LogId = {logId}");
         return result == 1 ? true : false;
     }
 
+    //Will run direct sql command to delete a log , will get related sql exception's if failed
     public async Task<bool> ExecuteDeleteSqlRawAsync(int logId)
     {
         var result = await _masterContext.Database.ExecuteSqlRawAsync($"UPDATE SystemLog SET Deleted = 1 WHERE LogId = {logId}");
         return result == 1 ? true : false;
     }
 
+    //Creating dynamic anonymous object
     public async Task<List<dynamic>> GetAnonymousLogDataList()
     {
         var anonymousList = await _masterContext.SystemLog
@@ -79,6 +83,7 @@ public class LogServices : ILogServices
         return anonymousList;
     }
 
+    //Will get entity entry with all data's
     public async Task<EntityEntry> GetEntryAsync(int logId)
     {
         var dbLog = await GetLogByIdWithFindCmdAsync(logId);
@@ -86,7 +91,7 @@ public class LogServices : ILogServices
         return logEntry;
     }
 
-    //Finds by a key
+    //Finds by a key using find async method
     public async Task<SystemLog?> GetLogByIdWithFindCmdAsync(int logId)
     {
         return await _masterContext.SystemLog.FindAsync(logId);
@@ -116,6 +121,7 @@ public class LogServices : ILogServices
         return await _masterContext.SystemLog.AverageAsync(sl => sl.LogId);
     }
 
+    //Will group data based on defined property and get a list of it 
     public async Task<List<dynamic>> ReadGroupedLogsAsync()
     {
         var groupedLogs = await _masterContext.SystemLog
@@ -125,6 +131,7 @@ public class LogServices : ILogServices
         return groupedLogs;
     }
 
+    //Will join two datasets based on key's that we provide
     public async Task<List<dynamic>> ReadJoinedLogsAsync()
     {
         var userLogs = await _masterContext.SystemLog
@@ -134,6 +141,11 @@ public class LogServices : ILogServices
             (sl, au) => new { sl.Description, au.Username, au.EmailAddress })
             .ToListAsync<dynamic>();
         return userLogs;
+    }
+
+    public async Task<List<dynamic>> ReadLogDescriptionAsync()
+    {
+        return await _masterContext.SystemLog.Select(sl => sl.Description).ToListAsync<dynamic>();
     }
 
     //Will get maximum log id from database
