@@ -31,6 +31,7 @@ public class UserController : ControllerBase
             throw new Exception(ex.Message);
         }
     }
+
     [HttpGet]
     [Route("[action]")]
     public async Task<IActionResult> GetUsers()
@@ -45,6 +46,7 @@ public class UserController : ControllerBase
             throw new Exception(ex.Message);
         }
     }
+
     [HttpPost]
     [Route("[action]")]
     public async Task<IActionResult> SaveUser(AppUser user)
@@ -59,6 +61,7 @@ public class UserController : ControllerBase
             throw new Exception(ex.Message);
         }
     }
+
     [HttpPut]
     [Route("[action]")]
     public async Task<IActionResult> UpdateUser(int userId, AppUser user)
@@ -73,6 +76,7 @@ public class UserController : ControllerBase
             throw new Exception(ex.Message);
         }
     }
+
     [HttpDelete]
     [Route("[action]")]
     public async Task<IActionResult> DeleteUser(int userId)
@@ -80,6 +84,36 @@ public class UserController : ControllerBase
         try
         {
             var result = await _userServices.DeleteUserAsync(userId);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception(ex.Message);
+        }
+    }
+
+    [HttpGet]
+    [Route("[action]")]
+    public async Task<IActionResult> GetFlattenUserLogColleciton()
+    {
+        try
+        {
+            var result = await _userServices.GetFlattenCollectionUserAsync();
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception(ex.Message);
+        }
+    }
+
+    [HttpGet]
+    [Route("[action]")]
+    public async Task<IActionResult> GetCrossUserLogColleciton()
+    {
+        try
+        {
+            var result = await _userServices.GetCrossUserLogsAsync();
             return Ok(result);
         }
         catch (Exception ex)
