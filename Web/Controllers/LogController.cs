@@ -91,4 +91,34 @@ public class LogController : ControllerBase
             throw new Exception(ex.Message);
         }
     }
+
+    [HttpDelete]
+    [Route("[action]")]
+    public async Task<IActionResult> RawDelete(int logId)
+    {
+        try
+        {
+            var result = await _logServices.ExecuteDeleteSqlRawAsync(logId);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception(ex.Message);
+        }
+    }
+
+    [HttpDelete]
+    [Route("[action]")]
+    public async Task<IActionResult> RawDelete2(int logId)
+    {
+        try
+        {
+            var result = await _logServices.ExecuteDeleteSqlInterpolatedAsync(logId);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception(ex.Message);
+        }
+    }
 }

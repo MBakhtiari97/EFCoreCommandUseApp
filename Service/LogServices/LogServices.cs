@@ -16,7 +16,8 @@ public interface ILogServices
     Task<SystemLog?> GetLogByIdWithFindCmdAsync(int logId);
     Task<SystemLog?> GetLogByIdWithSingleCmdAsync(int logId);
     Task<SystemLog?> GetLogByIdWithFirstCmdAsync(int logId);
-    Task<bool> ExecuteDeleteSqlRawAsync();
+    Task<bool> ExecuteDeleteSqlRawAsync(int logId);
+    Task<bool> ExecuteDeleteSqlInterpolatedAsync(int logId);
     Task<List<SystemLog>> GetLogsAsync();
 }
 
@@ -52,9 +53,15 @@ public class LogServices : ILogServices
             throw new KeyNotFoundException("Cannot found log data");
     }
 
-    public async Task<bool> ExecuteDeleteSqlRawAsync()
+    public async Task<bool> ExecuteDeleteSqlInterpolatedAsync(int logId)
     {
-        var result = await _masterContext.Database.ExecuteSqlRawAsync("DELETE FROM AppUser WHERE AppUserId = 1");
+        var result = await _masterContext.Database.ExecuteSqlInterpolatedAsync($"UPDATE SystemLog SET Deleted = 1 WHERE LogId = {logId}");
+        return result == 1 ? true : false;
+    }
+
+    public async Task<bool> ExecuteDeleteSqlRawAsync(int logId)
+    {
+        var result = await _masterContext.Database.ExecuteSqlRawAsync($"UPDATE SystemLog SET Deleted = 1 WHERE LogId = {logId}");
         return result == 1 ? true : false;
     }
 
