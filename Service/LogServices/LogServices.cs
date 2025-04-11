@@ -8,6 +8,7 @@ public interface ILogServices
 {
     Task<int> SaveLogAsync(SystemLog systemLog);
     Task<int> UpdateLogAsync(int logId, SystemLog systemLog);
+    Task<int> DeleteLogAsync(int logId);
     Task<SystemLog?> GetLogByIdAsync(int logId);
     Task<List<SystemLog>> GetLogsAsync();
 }
@@ -19,6 +20,19 @@ public class LogServices : ILogServices
     public LogServices(MasterDbContext masterContext)
     {
         _masterContext = masterContext;
+    }
+
+    public async Task<int> DeleteLogAsync(int logId)
+    {
+        var dbLog = await GetLogByIdAsync(logId);
+        if (dbLog != null)
+        {
+            _masterContext.SystemLog.Remove(dbLog);
+            await _masterContext.SaveChangesAsync();
+            return logId;
+        }
+        else
+            throw new KeyNotFoundException("Cannot found log data");
     }
 
     public async Task<SystemLog?> GetLogByIdAsync(int logId)
