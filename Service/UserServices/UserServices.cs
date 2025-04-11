@@ -1,6 +1,7 @@
 ﻿using Core;
 using DataLayer;
 using Microsoft.EntityFrameworkCore;
+using System.Net.NetworkInformation;
 
 namespace Service.UserServices;
 
@@ -13,6 +14,8 @@ public interface IUserServices
     Task<IEnumerable<AppUser>?> GetAllUsersAsync();
     Task<AppUser?> GetUserWithLogsAsync(int userId);
     Task<IEnumerable<AppUser>?> GetUsersWithLogsAsync();
+    Task<List<dynamic>> GetFlattenCollectionUserAsync();
+    Task<List<dynamic>> GetCrossUserLogsAsync();
 }
 
 public class UserServices : IUserServices
@@ -41,7 +44,37 @@ public class UserServices : IUserServices
     public async Task<IEnumerable<AppUser>?> GetAllUsersAsync()
     {
         return await _masterContext.AppUser
-            .ToListAsync();
+        .ToListAsync();
+    }
+
+    //Generating Cross-Users(Cartesian User)
+    public async Task<List<dynamic>> GetCrossUserLogsAsync()
+    {
+        var users = await _masterContext.AppUser.ToListAsync();
+        var logs = await _masterContext.SystemLog.ToListAsync();
+
+        // Generating all combinations of users and logs
+        var userLogPair = users
+            .SelectMany(users => logs,
+            (user, log) => new { Username = user.Username, Description = log.Description });
+
+        var result = new List<dynamic>();
+        foreach (var pair in userLogPair)
+        {
+            string text = $"{pair.Username} submitted operation with description of {pair.Description}";
+            result.Add(text);
+        }
+        return result;
+    }
+
+    //Using SelectMany to flatten the SystemLogs collection
+    public async Task<List<dynamic>> GetFlattenCollectionUserAsync()
+    {
+        var systemLogs = await _masterContext.AppUser.SelectMany(c => c.SystemLogs).ToListAsync();
+        var result = new List<dynamic>();
+        foreach (var systemLog in systemLogs)
+            result.Add(systemLog);
+        return result;
     }
 
     public async Task<AppUser?> GetUserAsync(int userId)

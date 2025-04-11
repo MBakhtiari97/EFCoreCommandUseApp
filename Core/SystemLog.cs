@@ -22,7 +22,7 @@ public class SystemLog
 
     #region Navigation Properties
 
-    public AppUser AppUser { get; set; } = null!;
+    public AppUser? AppUser { get; set; }
 
     #endregion
 }
