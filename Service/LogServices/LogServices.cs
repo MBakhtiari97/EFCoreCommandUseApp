@@ -22,6 +22,7 @@ public interface ILogServices
     Task<List<dynamic>> GetAnonymousLogDataList();
     Task<int> ReadMaxLogIdAsync();
     Task<int> ReadMinLogIdAsync();
+    Task<double> ReadAverageLogIdAsync();
 }
 
 public class LogServices : ILogServices
@@ -106,11 +107,20 @@ public class LogServices : ILogServices
         return await _masterContext.SystemLog.ToListAsync();
     }
 
+    //Implemented on log id because it was the only numeric field so , don't get so strict !
+    //Will get average of id values
+    public async Task<double> ReadAverageLogIdAsync()
+    {
+        return await _masterContext.SystemLog.AverageAsync(sl => sl.LogId);
+    }
+
+    //Will get maximum log id from database
     public async Task<int> ReadMaxLogIdAsync()
     {
         return await _masterContext.SystemLog.MaxAsync(sl => sl.LogId);
     }
 
+    //Will get minumum log id from database
     public async Task<int> ReadMinLogIdAsync()
     {
         return await _masterContext.SystemLog.MinAsync(sl => sl.LogId);
