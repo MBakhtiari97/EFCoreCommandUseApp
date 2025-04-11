@@ -9,7 +9,9 @@ public interface ILogServices
     Task<int> SaveLogAsync(SystemLog systemLog);
     Task<int> UpdateLogAsync(int logId, SystemLog systemLog);
     Task<int> DeleteLogAsync(int logId);
-    Task<SystemLog?> GetLogByIdAsync(int logId);
+    Task<SystemLog?> GetLogByIdWithFindCmdAsync(int logId);
+    Task<SystemLog?> GetLogByIdWithSingleCmdAsync(int logId);
+    Task<SystemLog?> GetLogByIdWithFirstCmdAsync(int logId);
     Task<List<SystemLog>> GetLogsAsync();
 }
 
@@ -24,7 +26,7 @@ public class LogServices : ILogServices
 
     public async Task<int> DeleteLogAsync(int logId)
     {
-        var dbLog = await GetLogByIdAsync(logId);
+        var dbLog = await GetLogByIdWithFindCmdAsync(logId);
         if (dbLog != null)
         {
             _masterContext.SystemLog.Remove(dbLog);
@@ -35,9 +37,22 @@ public class LogServices : ILogServices
             throw new KeyNotFoundException("Cannot found log data");
     }
 
-    public async Task<SystemLog?> GetLogByIdAsync(int logId)
+    //Finds by a key
+    public async Task<SystemLog?> GetLogByIdWithFindCmdAsync(int logId)
     {
         return await _masterContext.SystemLog.FindAsync(logId);
+    }
+
+    //Finds by condition, if multiple found, first one will return, otherwise if nothing found it returns null
+    public async Task<SystemLog?> GetLogByIdWithFirstCmdAsync(int logId)
+    {
+        return await _masterContext.SystemLog.FirstOrDefaultAsync(sl => sl.LogId == logId);
+    }
+
+    //Finds by condition, if multiple found, throws exception, if just one record found, returns that, otherwise it returns null
+    public async Task<SystemLog?> GetLogByIdWithSingleCmdAsync(int logId)
+    {
+        throw new NotImplementedException();
     }
 
     public async Task<List<SystemLog>> GetLogsAsync()
@@ -55,7 +70,7 @@ public class LogServices : ILogServices
 
     public async Task<int> UpdateLogAsync(int logId, SystemLog systemLog)
     {
-        var dbLog = await GetLogByIdAsync(logId);
+        var dbLog = await GetLogByIdWithFindCmdAsync(logId);
         if (dbLog == null)
             throw new KeyNotFoundException("Log data not found");
 

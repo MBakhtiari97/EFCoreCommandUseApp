@@ -23,7 +23,7 @@ public class LogController : ControllerBase
     {
         try
         {
-            var result = await _logServices.GetLogByIdAsync(logId);
+            var result = await _logServices.GetLogByIdWithFindCmdAsync(logId);
             return Ok(result);
         }
         catch (Exception ex)
@@ -75,7 +75,7 @@ public class LogController : ControllerBase
     }
     [HttpDelete]
     [Route("[action]")]
-    public async Task<IActionResult> DeleteUser(int logId)
+    public async Task<IActionResult> DeleteLog(int logId)
     {
         try
         {
