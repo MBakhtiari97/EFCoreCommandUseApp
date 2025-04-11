@@ -37,16 +37,25 @@ public class LogServices : ILogServices
         _masterContext = masterContext;
     }
 
+    /// <summary>
+    /// Check Existed command of efcore With covering conditional checking and Any
+    /// </summary>
     public async Task<bool> CheckLogExistsAsync(int logId)
     {
         return await _masterContext.SystemLog.AnyAsync(sl => sl.LogId == logId);
     }
 
+    /// <summary>
+    /// Get number count of records with covering conditional search
+    /// </summary>
     public async Task<int> CountUserLogsAsync(int userId)
     {
         return await _masterContext.SystemLog.CountAsync(sl => sl.AppUserId == userId);
     }
 
+    /// <summary>
+    /// EF Core delete command
+    /// </summary>
     public async Task<int> DeleteLogAsync(int logId)
     {
         var dbLog = await GetLogByIdWithFindCmdAsync(logId);
@@ -60,21 +69,27 @@ public class LogServices : ILogServices
             throw new KeyNotFoundException("Cannot found log data");
     }
 
-    //Will run direct sql command to delete a log with parametrizing for better security, will get related sql exception's if failed
+    /// <summary>
+    /// Will run direct sql command to delete a log with parametrizing for better security, will get related sql exception's if failed
+    /// </summary>
     public async Task<bool> ExecuteDeleteSqlInterpolatedAsync(int logId)
     {
         var result = await _masterContext.Database.ExecuteSqlInterpolatedAsync($"UPDATE SystemLog SET Deleted = 1 WHERE LogId = {logId}");
         return result == 1 ? true : false;
     }
 
-    //Will run direct sql command to delete a log , will get related sql exception's if failed
+    /// <summary>
+    /// Will run direct sql command to delete a log , will get related sql exception's if failed
+    /// </summary>
     public async Task<bool> ExecuteDeleteSqlRawAsync(int logId)
     {
         var result = await _masterContext.Database.ExecuteSqlRawAsync($"UPDATE SystemLog SET Deleted = 1 WHERE LogId = {logId}");
         return result == 1 ? true : false;
     }
 
-    //Creating dynamic anonymous object
+    /// <summary>
+    /// Creating dynamic anonymous object
+    /// </summary>
     public async Task<List<dynamic>> GetAnonymousLogDataList()
     {
         var anonymousList = await _masterContext.SystemLog
@@ -83,7 +98,9 @@ public class LogServices : ILogServices
         return anonymousList;
     }
 
-    //Will get entity entry with all data's
+    /// <summary>
+    /// Will get entity entry with all data's
+    /// </summary>
     public async Task<EntityEntry> GetEntryAsync(int logId)
     {
         var dbLog = await GetLogByIdWithFindCmdAsync(logId);
@@ -91,37 +108,49 @@ public class LogServices : ILogServices
         return logEntry;
     }
 
-    //Finds by a key using find async method
+    /// <summary>
+    /// Fetching data by a key using find async method
+    /// </summary>
     public async Task<SystemLog?> GetLogByIdWithFindCmdAsync(int logId)
     {
         return await _masterContext.SystemLog.FindAsync(logId);
     }
 
-    //Finds by condition, if multiple found, first one will return, otherwise if nothing found it returns null
+    /// <summary>
+    /// Fetching data by First method and condition, if multiple found, first one will return, otherwise if nothing found it returns null
+    /// </summary>
     public async Task<SystemLog?> GetLogByIdWithFirstCmdAsync(int logId)
     {
         return await _masterContext.SystemLog.FirstOrDefaultAsync(sl => sl.LogId == logId);
     }
 
-    //Finds by condition, if multiple found, throws exception, if just one record found, returns that, otherwise it returns null
+    /// <summary>
+    /// Fetching data by First method and condition, if multiple found, throws exception, if just one record found, returns that, otherwise it returns null
+    /// </summary>
     public async Task<SystemLog?> GetLogByIdWithSingleCmdAsync(int logId)
     {
         return await _masterContext.SystemLog.SingleOrDefaultAsync(sl => sl.LogId == logId);
     }
 
+    /// <summary>
+    /// Fetching data list
+    /// </summary>
     public async Task<List<SystemLog>> GetLogsAsync()
     {
         return await _masterContext.SystemLog.ToListAsync();
     }
 
-    //Implemented on log id because it was the only numeric field so , don't get so strict !
-    //Will get average of id values
+    /// <summary>
+    /// Implemented on log id because it was the only numeric field so , don't get so strict ! / Will get average of id values
+    /// </summary>
     public async Task<double> ReadAverageLogIdAsync()
     {
         return await _masterContext.SystemLog.AverageAsync(sl => sl.LogId);
     }
 
-    //Will group data based on defined property and get a list of it 
+    /// <summary>
+    /// Will group data based on defined property and get a list of it 
+    /// </summary>
     public async Task<List<dynamic>> ReadGroupedLogsAsync()
     {
         var groupedLogs = await _masterContext.SystemLog
@@ -131,7 +160,9 @@ public class LogServices : ILogServices
         return groupedLogs;
     }
 
-    //Will join two datasets based on key's that we provide
+    /// <summary>
+    /// Will join two datasets based on key's that we provide
+    /// </summary>
     public async Task<List<dynamic>> ReadJoinedLogsAsync()
     {
         var userLogs = await _masterContext.SystemLog
@@ -143,23 +174,33 @@ public class LogServices : ILogServices
         return userLogs;
     }
 
+    /// <summary>
+    /// Fetching anonymous data , just specific field
+    /// </summary>
     public async Task<List<dynamic>> ReadLogDescriptionAsync()
     {
         return await _masterContext.SystemLog.Select(sl => sl.Description).ToListAsync<dynamic>();
     }
 
-    //Will get maximum log id from database
+    /// <summary>
+    /// Will get maximum log id from database
+    /// </summary>
     public async Task<int> ReadMaxLogIdAsync()
     {
         return await _masterContext.SystemLog.MaxAsync(sl => sl.LogId);
     }
 
-    //Will get minumum log id from database
+    /// <summary>
+    /// Will get minumum log id from database
+    /// </summary>
     public async Task<int> ReadMinLogIdAsync()
     {
         return await _masterContext.SystemLog.MinAsync(sl => sl.LogId);
     }
 
+    /// <summary>
+    /// Insert command of ef core
+    /// </summary>
     public async Task<int> SaveLogAsync(SystemLog systemLog)
     {
         await _masterContext.AddAsync(systemLog);
@@ -168,6 +209,9 @@ public class LogServices : ILogServices
         return systemLog.LogId;
     }
 
+    /// <summary>
+    /// Update command of ef core
+    /// </summary>
     public async Task<int> UpdateLogAsync(int logId, SystemLog systemLog)
     {
         var dbLog = await GetLogByIdWithFindCmdAsync(logId);
